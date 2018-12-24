@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+    <form>
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-default" id="refresh-button"><i class="fa fa-refresh"></i> 更新</button>
+        </div>
+    </form>
+</div>
+<div class="row">
+    <div class="col-md-6 col-sm-6">
+        <div id="health-donut"></div>
+    </div>
+    <div class="col-md-6 col-sm-6">
+        <div class="table-responsive">
+            <table id="devices-table" class="table table-hover">
+                <thead>
+                <tr>
+                    <th>裝置 ID</th>
+                    <th>最新預測</th>
+                    <th>日期/時間</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+$(document).ready(function() {
+    function reload() {
+        $('#refresh-button>i').addClass('fa-spin');
+        $.get('/api/intelligence').done(function(intelligence) {            
+            var data = [{
+                values: Object.values(intelligence.summary),
+                labels: Object.keys(intelligence.summary),
+                domain: {
+                    x: [0, 1]
+                },
+                marker: {
+                    colors: ['rgb(247, 69, 4)', 'rgb(128,128,128)',  'rgb(63, 149, 215)']
+                },
+                name: '裝置健康表',
+                hoverinfo: 'label+value',
+                hole: .4,
+                type: 'pie'}];
+
+                var layout = {
+                    title: '裝置集健康狀況',
+                    annotations: [
+                        {
+                            font: {
+                                size: 20
+                            },
+                            showarrow: false,
+                            text: '',
+                            x: 0.5,
+                            y: 0.5
+                        }
+                    ],
+                    height: 400,
+                    width: 500
+                };
+                Plotly.newPlot('health-donut', data, layout, {displayModeBar: false});
+
+                var devicesTable = $('#devices-table');
+                var devicesTbody = devicesTable.find('tbody');
+                devicesTbody.empty();
+
+                $.each(intelligence.predictions, function(i, device) {
+                    child = $('<tr>')
+                    .append($('<td><a href="/intelligence/' + device.deviceId + '">' + device.deviceId + '</a></td>'))
+                    .append($('<td><span>' + device.prediction + '</span></td>'))
+                    .append($('<td><span>' + renderDate(device.lastUpdated) + '</span></td>'))
+                    devicesTbody.append(child);
+                });
+                devicesTable.show();
+            }).always(function() {
+                $('#refresh-button>i').removeClass('fa-spin');
+            });
+    }
+
+    reload();
+
+    $('#refresh-button').click(function() {
+        reload();
+    });
+});
+</script>
+{% endblock %}

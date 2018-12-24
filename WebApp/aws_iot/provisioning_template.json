@@ -1,0 +1,44 @@
+{
+  "Parameters" : {
+     "ThingName" : {
+       "Type" : "String"
+     },
+     "SerialNumber" : {
+       "Type" : "String"
+     },
+     "Location" : {
+       "Type" : "String",
+       "Default" : "WA"
+     },
+     "CertificateId" : {
+       "Type" : "String"    
+     }
+  },
+ 
+  "Resources" : {
+    "thing" : {
+      "Type" : "AWS::IoT::Thing",
+      "Properties" : {
+        "ThingName" : {"Ref" : ""}
+      }
+    },
+ 
+    "certificate" : {
+      "Type" : "AWS::IoT::Certificate",
+      "Properties" : {
+        "CertificateId": {"Ref" : ""}
+      }, 
+      "OverrideSettings" : {
+        "Status" : "DO_NOTHING"
+      }
+    },
+ 
+    "policy" : {
+      "Type" : "AWS::IoT::Policy",
+      "Properties" : {
+        "PolicyName" : ""
+      }
+    }
+  }
+ 
+}
