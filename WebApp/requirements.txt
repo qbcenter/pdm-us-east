@@ -2,7 +2,7 @@ Flask==0.12.1
 Flask-Breadcrumbs==0.4.0
 Markdown==2.6.11
 PyJWT==1.6.1
-urllib3==1.22
+urllib3==1.26.5
 requests==2.21.0
 python-dateutil==2.7.5
 boto3==1.9.68
